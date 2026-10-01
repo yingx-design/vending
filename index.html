@@ -1,1 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Vending Machine</title>
 
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #efefef;
+  overflow-x: hidden;
+}
+
+/* 整个页面 */
+.stage {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+/* vending machine 容器 */
+.machine {
+  position: relative;
+  width: min(90vw, 760px);
+}
+
+.machine-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 商品层 */
+.products {
+  position: absolute;
+
+  /* 后面可以根据你的机器图片微调 */
+  left: 12%;
+  top: 17%;
+
+  width: 61%;
+  height: 49%;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+
+  column-gap: 4%;
+  row-gap: 2%;
+
+  z-index: 3;
+}
+
+.product {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.product:hover {
+  transform: scale(1.08);
+}
+
+.product img {
+  width: 72%;
+  height: 72%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+  user-select: none;
+
+  filter:
+    drop-shadow(0 5px 5px rgba(0,0,0,.18));
+}
+
+/* 商品编号 */
+.number {
+  position: absolute;
+  right: 7%;
+  bottom: 4%;
+
+  padding: 3px 6px;
+
+  background: #fff;
+  color: #111;
+
+  font-size: 10px;
+  font-weight: bold;
+
+  border-radius: 2px;
+}
+
+/* 投币区域 */
+.coin-slot {
+  position: absolute;
+
+  /*
+  这个位置后面根据你的 vending-machine.png
+  再精确调整
+  */
+  right: 8%;
+  top: 43%;
+
+  width: 12%;
+  height: 12%;
+
+  z-index: 5;
+
+  border-radius: 10px;
+}
+
+/* 投币成功时提示 */
+.display {
+  position: absolute;
+
+  right: 7%;
+  top: 35%;
+
+  width: 14%;
+
+  color: #fff;
+  background: #111;
+
+  padding: 7px 4px;
+
+  text-align: center;
+
+  font-family: monospace;
+  font-size: clamp(8px, 1.4vw, 14px);
+
+  z-index: 6;
+}
+
+.display.ready {
+  color: #63ff74;
+}
+
+/* coin */
+.coin {
+  position: fixed;
+
+  width: 70px;
+  height: 70px;
+
+  object-fit: contain;
+
+  left: 35px;
+  bottom: 35px;
+
+  cursor: grab;
+
+  z-index: 100;
+
+  user-select: none;
+
+  filter:
+    drop-shadow(0 7px 6px rgba(0,0,0,.25));
+
+  transition:
+    transform .15s ease;
+}
+
+.coin:hover {
+  transform: scale(1.08);
+}
+
+.coin.dragging {
+  cursor: grabbing;
+  transform: scale(1.12);
+}
+
+/* 掉下来的商品 */
+.falling-product {
+  position: fixed;
+
+  width: 100px;
+  height: 100px;
+
+  object-fit: contain;
+
+  z-index: 50;
+
+  pointer-events: none;
+
+  filter:
+    drop-shadow(0 8px 6px rgba(0,0,0,.25));
+
+  transition:
+    left .8s cubic-bezier(.2,.7,.3,1),
+    top .8s cubic-bezier(.4,0,.8,1),
+    transform .8s ease;
+}
+
+/* 提示 */
+.instructions {
+  position: fixed;
+
+  left: 25px;
+  top: 25px;
+
+  font-size: 12px;
+  letter-spacing: .08em;
+
+  color: #111;
+
+  z-index: 100;
+}
+
+@media (max-width: 700px) {
+  .stage {
+    padding: 10px;
+  }
+
+  .coin {
+    width: 55px;
+    height: 55px;
+  }
+
+  .instructions {
+    font-size: 9px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="instructions">
+DRAG THE COIN → SELECT SOMETHING
+</div>
+
+<div class="stage">
+
+  <div class="machine" id="machine">
+
+    <!-- vending machine -->
+    <img
+      src="vending-machine.png"
+      class="machine-bg"
+      alt="Vending Machine"
+    >
+
+    <!-- 商品 -->
+    <div class="products">
+
+      <div class="product" data-product="groundcycle.png">
+        <img src="groundcycle.png">
+        <span class="number">A1</span>
+      </div>
+
+      <div class="product" data-product="social-cloud.png">
+        <img src="social-cloud.png">
+        <span class="number">A2</span>
+      </div>
+
+      <div class="product" data-product="city-walk.png">
+        <img src="city-walk.png">
+        <span class="number">A3</span>
+      </div>
+
+      <div class="product" data-product="before-i-speak.png">
+        <img src="before-i-speak.png">
+        <span class="number">B1</span>
+      </div>
+
+      <div class="product" data-product="perfume.png">
+        <img src="perfume.png">
+        <span class="number">B2</span>
+      </div>
+
+      <div class="product" data-product="body-fonts.png">
+        <img src="body-fonts.png">
+        <span class="number">B3</span>
+      </div>
+
+      <div class="product" data-product="in-between.png">
+        <img src="in-between.png">
+        <span class="number">C1</span>
+      </div>
+
+      <div class="product" data-product="dad-healer.png">
+        <img src="dad-healer.png">
+        <span class="number">C2</span>
+      </div>
+
+      <div class="product" data-product="quiet-town.png">
+        <img src="quiet-town.png">
+        <span class="number">C3</span>
+      </div>
+
+      <div class="product" data-product="hypertext.png">
+        <img src="hypertext.png">
+        <span class="number">D1</span>
+      </div>
+
+    </div>
+
+    <!-- 小屏幕 -->
+    <div class="display" id="display">
+      INSERT COIN
+    </div>
+
+    <!-- 投币检测区域 -->
+    <div class="coin-slot" id="coinSlot"></div>
+
+  </div>
+
+</div>
+
+<!-- coin -->
+<img
+  src="coin.png"
+  class="coin"
+  id="coin"
+  alt="Coin"
+  draggable="false"
+>
+
+<script>
+
+const coin =
+  document.getElementById("coin");
+
+const coinSlot =
+  document.getElementById("coinSlot");
+
+const display =
+  document.getElementById("display");
+
+const products =
+  document.querySelectorAll(".product");
+
+let dragging = false;
+let paid = false;
+
+let offsetX = 0;
+let offsetY = 0;
+
+
+/* ==========================
+   COIN DRAG
+========================== */
+
+coin.addEventListener(
+  "mousedown",
+  function(e) {
+
+    dragging = true;
+
+    coin.classList.add("dragging");
+
+    const rect =
+      coin.getBoundingClientRect();
+
+    offsetX =
+      e.clientX - rect.left;
+
+    offsetY =
+      e.clientY - rect.top;
+
+    coin.style.bottom = "auto";
+
+  }
+);
+
+
+document.addEventListener(
+  "mousemove",
+  function(e) {
+
+    if (!dragging) return;
+
+    coin.style.left =
+      (e.clientX - offsetX) + "px";
+
+    coin.style.top =
+      (e.clientY - offsetY) + "px";
+
+  }
+);
+
+
+document.addEventListener(
+  "mouseup",
+  function() {
+
+    if (!dragging) return;
+
+    dragging = false;
+
+    coin.classList.remove("dragging");
+
+    checkCoin();
+
+  }
+);
+
+
+/* ==========================
+   CHECK COIN SLOT
+========================== */
+
+function checkCoin() {
+
+  const coinRect =
+    coin.getBoundingClientRect();
+
+  const slotRect =
+    coinSlot.getBoundingClientRect();
+
+  const coinCenterX =
+    coinRect.left +
+    coinRect.width / 2;
+
+  const coinCenterY =
+    coinRect.top +
+    coinRect.height / 2;
+
+
+  const inside =
+    coinCenterX > slotRect.left &&
+    coinCenterX < slotRect.right &&
+    coinCenterY > slotRect.top &&
+    coinCenterY < slotRect.bottom;
+
+
+  if (inside) {
+
+    paid = true;
+
+    display.textContent =
+      "$1.00 — SELECT";
+
+    display.classList.add(
+      "ready"
+    );
+
+    coin.style.transition =
+      "all .25s ease";
+
+    coin.style.left =
+      slotRect.left +
+      slotRect.width / 2 -
+      5 +
+      "px";
+
+    coin.style.top =
+      slotRect.top +
+      slotRect.height / 2 +
+      "px";
+
+    coin.style.transform =
+      "scale(.1) rotate(180deg)";
+
+    coin.style.opacity =
+      "0";
+
+  }
+
+}
+
+
+/* ==========================
+   PRODUCT CLICK
+========================== */
+
+products.forEach(
+  product => {
+
+    product.addEventListener(
+      "click",
+      function() {
+
+        if (!paid) {
+
+          display.textContent =
+            "INSERT COIN";
+
+          display.animate(
+            [
+              { transform: "translateX(0)" },
+              { transform: "translateX(-5px)" },
+              { transform: "translateX(5px)" },
+              { transform: "translateX(0)" }
+            ],
+            {
+              duration: 250
+            }
+          );
+
+          return;
+        }
+
+
+        dispenseProduct(
+          product
+        );
+
+      }
+    );
+
+  }
+);
+
+
+/* ==========================
+   DROP PRODUCT
+========================== */
+
+function dispenseProduct(product) {
+
+  const image =
+    product.dataset.product;
+
+  const productRect =
+    product.getBoundingClientRect();
+
+  const machineRect =
+    document
+      .getElementById("machine")
+      .getBoundingClientRect();
+
+
+  const falling =
+    document.createElement("img");
+
+  falling.src =
+    image;
+
+  falling.className =
+    "falling-product";
+
+
+  falling.style.left =
+    (
+      productRect.left +
+      productRect.width / 2 -
+      50
+    ) + "px";
+
+  falling.style.top =
+    (
+      productRect.top +
+      productRect.height / 2 -
+      50
+    ) + "px";
+
+
+  document.body.appendChild(
+    falling
+  );
+
+
+  /*
+    原来格子里的商品消失
+  */
+
+  product.style.opacity =
+    ".12";
+
+  product.style.pointerEvents =
+    "none";
+
+
+  /*
+    下一帧开始掉
+  */
+
+  requestAnimationFrame(
+    function() {
+
+      requestAnimationFrame(
+        function() {
+
+          falling.style.left =
+            (
+              machineRect.left +
+              machineRect.width * .48 -
+              50
+            ) + "px";
+
+          falling.style.top =
+            (
+              machineRect.top +
+              machineRect.height * .83
+            ) + "px";
+
+          falling.style.transform =
+            "rotate(25deg) scale(.85)";
+
+        }
+      );
+
+    }
+  );
+
+
+  display.textContent =
+    "THANK YOU";
+
+  display.classList.remove(
+    "ready"
+  );
+
+  paid = false;
+
+
+  /*
+    coin 重新出现
+  */
+
+  setTimeout(
+    function() {
+
+      coin.style.transition =
+        "none";
+
+      coin.style.transform =
+        "";
+
+      coin.style.opacity =
+        "1";
+
+      coin.style.left =
+        "35px";
+
+      coin.style.top =
+        "auto";
+
+      coin.style.bottom =
+        "35px";
+
+      display.textContent =
+        "INSERT COIN";
+
+    },
+    1500
+  );
+
+}
+
+</script>
+
+</body>
+</html>
