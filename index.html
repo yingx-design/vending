@@ -10,7 +10,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   width: 100%;
   min-height: 100%;
@@ -22,72 +23,101 @@ body {
   overflow-x: hidden;
 }
 
-/* 整个页面 */
+/* =========================
+   PAGE
+========================= */
+
 .stage {
   width: 100vw;
   min-height: 100vh;
+
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 30px;
+  align-items: center;
+
+  padding: 10px;
 }
 
-/* vending machine 容器 */
+/* =========================
+   MACHINE
+========================= */
+
 .machine {
   position: relative;
-  width: min(90vw, 760px);
+
+  width: min(94vw, 760px);
 }
 
 .machine-bg {
   display: block;
+
   width: 100%;
   height: auto;
-  user-select: none;
+
   pointer-events: none;
+  user-select: none;
 }
 
-/* 商品层 */
+/* =========================
+   PRODUCTS
+   5 columns × 4 rows
+========================= */
+
 .products {
   position: absolute;
 
-  /* 后面可以根据你的机器图片微调 */
-  left: 12%;
-  top: 17%;
+  /*
+    这一块覆盖机器左边商品展示窗
+  */
+  left: 6.4%;
+  top: 15.3%;
 
-  width: 61%;
-  height: 49%;
+  width: 67.5%;
+  height: 67%;
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
 
-  column-gap: 4%;
-  row-gap: 2%;
+  grid-template-columns:
+    repeat(5, 1fr);
 
-  z-index: 3;
+  grid-template-rows:
+    repeat(4, 1fr);
+
+  column-gap: 0;
+  row-gap: 1.5%;
+
+  z-index: 4;
 }
+
+/* =========================
+   EACH PRODUCT
+========================= */
 
 .product {
   position: relative;
 
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 
   cursor: pointer;
 
   transition:
-    transform .2s ease,
-    opacity .2s ease;
+    transform .18s ease,
+    opacity .25s ease;
 }
 
 .product:hover {
-  transform: scale(1.08);
+  transform: scale(1.10);
 }
 
+/* 商品本身 */
+
 .product img {
-  width: 72%;
-  height: 72%;
+  width: 105%;
+  height: 105%;
+
+  max-width: none;
 
   object-fit: contain;
 
@@ -95,82 +125,99 @@ body {
   user-select: none;
 
   filter:
-    drop-shadow(0 5px 5px rgba(0,0,0,.18));
+    drop-shadow(
+      0 7px 5px
+      rgba(0,0,0,.28)
+    );
 }
 
-/* 商品编号 */
-.number {
-  position: absolute;
-  right: 7%;
-  bottom: 4%;
+/* 第一排稍微往上 */
 
-  padding: 3px 6px;
-
-  background: #fff;
-  color: #111;
-
-  font-size: 10px;
-  font-weight: bold;
-
-  border-radius: 2px;
+.product:nth-child(-n+5) {
+  transform: translateY(-2%);
 }
 
-/* 投币区域 */
-.coin-slot {
-  position: absolute;
-
-  /*
-  这个位置后面根据你的 vending-machine.png
-  再精确调整
-  */
-  right: 8%;
-  top: 43%;
-
-  width: 12%;
-  height: 12%;
-
-  z-index: 5;
-
-  border-radius: 10px;
+.product:nth-child(-n+5):hover {
+  transform:
+    translateY(-2%)
+    scale(1.10);
 }
 
-/* 投币成功时提示 */
+/* 第二排 */
+
+.product:nth-child(n+6):nth-child(-n+10) {
+  transform: translateY(-1%);
+}
+
+.product:nth-child(n+6):nth-child(-n+10):hover {
+  transform:
+    translateY(-1%)
+    scale(1.10);
+}
+
+/* =========================
+   DISPLAY
+========================= */
+
 .display {
   position: absolute;
 
-  right: 7%;
-  top: 35%;
+  right: 5.5%;
+  top: 27.8%;
 
-  width: 14%;
+  width: 16.5%;
 
-  color: #fff;
-  background: #111;
-
-  padding: 7px 4px;
+  padding: 6px 2px;
 
   text-align: center;
 
-  font-family: monospace;
-  font-size: clamp(8px, 1.4vw, 14px);
+  background: #111;
+  color: white;
 
-  z-index: 6;
+  font-family: monospace;
+
+  font-size:
+    clamp(8px, 1.2vw, 13px);
+
+  z-index: 10;
+
+  pointer-events: none;
 }
 
 .display.ready {
-  color: #63ff74;
+  color: #62ff70;
 }
 
-/* coin */
+/* =========================
+   COIN SLOT
+========================= */
+
+.coin-slot {
+  position: absolute;
+
+  right: 8%;
+  top: 31.5%;
+
+  width: 10%;
+  height: 11%;
+
+  z-index: 9;
+}
+
+/* =========================
+   COIN
+========================= */
+
 .coin {
   position: fixed;
 
-  width: 70px;
-  height: 70px;
-
-  object-fit: contain;
-
   left: 35px;
   bottom: 35px;
+
+  width: 76px;
+  height: 76px;
+
+  object-fit: contain;
 
   cursor: grab;
 
@@ -179,7 +226,10 @@ body {
   user-select: none;
 
   filter:
-    drop-shadow(0 7px 6px rgba(0,0,0,.25));
+    drop-shadow(
+      0 8px 7px
+      rgba(0,0,0,.30)
+    );
 
   transition:
     transform .15s ease;
@@ -191,15 +241,19 @@ body {
 
 .coin.dragging {
   cursor: grabbing;
-  transform: scale(1.12);
+
+  transform: scale(1.13);
 }
 
-/* 掉下来的商品 */
+/* =========================
+   FALLING PRODUCT
+========================= */
+
 .falling-product {
   position: fixed;
 
-  width: 100px;
-  height: 100px;
+  width: 115px;
+  height: 115px;
 
   object-fit: contain;
 
@@ -208,131 +262,263 @@ body {
   pointer-events: none;
 
   filter:
-    drop-shadow(0 8px 6px rgba(0,0,0,.25));
+    drop-shadow(
+      0 9px 7px
+      rgba(0,0,0,.30)
+    );
 
   transition:
-    left .8s cubic-bezier(.2,.7,.3,1),
-    top .8s cubic-bezier(.4,0,.8,1),
-    transform .8s ease;
+    left .85s
+      cubic-bezier(.25,.7,.3,1),
+
+    top .85s
+      cubic-bezier(.5,0,.85,1),
+
+    transform .85s ease;
 }
 
-/* 提示 */
+/* =========================
+   INSTRUCTION
+========================= */
+
 .instructions {
   position: fixed;
 
-  left: 25px;
-  top: 25px;
+  top: 28px;
+  left: 28px;
+
+  z-index: 100;
 
   font-size: 12px;
-  letter-spacing: .08em;
+
+  letter-spacing: .1em;
 
   color: #111;
 
-  z-index: 100;
+  pointer-events: none;
 }
 
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 700px) {
+
   .stage {
-    padding: 10px;
+    padding: 5px;
   }
 
   .coin {
     width: 55px;
     height: 55px;
+
+    left: 15px;
+    bottom: 15px;
   }
 
   .instructions {
-    font-size: 9px;
+    top: 12px;
+    left: 12px;
+
+    font-size: 8px;
   }
 }
 </style>
 </head>
 
+
 <body>
 
 <div class="instructions">
-DRAG THE COIN → SELECT SOMETHING
+  DRAG THE COIN → SELECT SOMETHING
 </div>
+
 
 <div class="stage">
 
-  <div class="machine" id="machine">
+  <div
+    class="machine"
+    id="machine"
+  >
 
-    <!-- vending machine -->
+    <!-- MACHINE BACKGROUND -->
+
     <img
       src="vending-machine.png"
       class="machine-bg"
       alt="Vending Machine"
     >
 
-    <!-- 商品 -->
+
+    <!-- PRODUCTS -->
+
     <div class="products">
 
-      <div class="product" data-product="groundcycle.png">
-        <img src="groundcycle.png">
-        <span class="number">A1</span>
+
+      <!-- ===== ROW A ===== -->
+
+
+      <!-- A1 -->
+
+      <div
+        class="product"
+        data-product="groundcycle.png"
+      >
+        <img
+          src="groundcycle.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="social-cloud.png">
-        <img src="social-cloud.png">
-        <span class="number">A2</span>
+
+      <!-- A2 -->
+
+      <div
+        class="product"
+        data-product="social-cloud.png"
+      >
+        <img
+          src="social-cloud.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="city-walk.png">
-        <img src="city-walk.png">
-        <span class="number">A3</span>
+
+      <!-- A3 -->
+
+      <div
+        class="product"
+        data-product="city-walk.png"
+      >
+        <img
+          src="city-walk.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="before-i-speak.png">
-        <img src="before-i-speak.png">
-        <span class="number">B1</span>
+
+      <!-- A4 -->
+
+      <div
+        class="product"
+        data-product="before-i-speak.png"
+      >
+        <img
+          src="before-i-speak.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="perfume.png">
-        <img src="perfume.png">
-        <span class="number">B2</span>
+
+      <!-- A5 -->
+
+      <div
+        class="product"
+        data-product="perfume.png"
+      >
+        <img
+          src="perfume.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="body-fonts.png">
-        <img src="body-fonts.png">
-        <span class="number">B3</span>
+
+
+      <!-- ===== ROW B ===== -->
+
+
+      <!-- B1 -->
+
+      <div
+        class="product"
+        data-product="body-fonts.png"
+      >
+        <img
+          src="body-fonts.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="in-between.png">
-        <img src="in-between.png">
-        <span class="number">C1</span>
+
+      <!-- B2 -->
+
+      <div
+        class="product"
+        data-product="in-between.png"
+      >
+        <img
+          src="in-between.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="dad-healer.png">
-        <img src="dad-healer.png">
-        <span class="number">C2</span>
+
+      <!-- B3 -->
+
+      <div
+        class="product"
+        data-product="dad-healer.png"
+      >
+        <img
+          src="dad-healer.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="quiet-town.png">
-        <img src="quiet-town.png">
-        <span class="number">C3</span>
+
+      <!-- B4 -->
+
+      <div
+        class="product"
+        data-product="quiet-town.png"
+      >
+        <img
+          src="quiet-town.png"
+          alt=""
+        >
       </div>
 
-      <div class="product" data-product="hypertext.png">
-        <img src="hypertext.png">
-        <span class="number">D1</span>
+
+      <!-- B5 -->
+
+      <div
+        class="product"
+        data-product="hypertext.png"
+      >
+        <img
+          src="hypertext.png"
+          alt=""
+        >
       </div>
+
 
     </div>
 
-    <!-- 小屏幕 -->
-    <div class="display" id="display">
+
+    <!-- DISPLAY -->
+
+    <div
+      class="display"
+      id="display"
+    >
       INSERT COIN
     </div>
 
-    <!-- 投币检测区域 -->
-    <div class="coin-slot" id="coinSlot"></div>
+
+    <!-- INVISIBLE COIN TARGET -->
+
+    <div
+      class="coin-slot"
+      id="coinSlot"
+    ></div>
 
   </div>
 
 </div>
 
-<!-- coin -->
+
+<!-- COIN -->
+
 <img
   src="coin.png"
   class="coin"
@@ -341,7 +527,12 @@ DRAG THE COIN → SELECT SOMETHING
   draggable="false"
 >
 
+
 <script>
+
+/* =========================
+   ELEMENTS
+========================= */
 
 const coin =
   document.getElementById("coin");
@@ -352,8 +543,14 @@ const coinSlot =
 const display =
   document.getElementById("display");
 
+const machine =
+  document.getElementById("machine");
+
 const products =
-  document.querySelectorAll(".product");
+  document.querySelectorAll(
+    ".product"
+  );
+
 
 let dragging = false;
 let paid = false;
@@ -362,9 +559,9 @@ let offsetX = 0;
 let offsetY = 0;
 
 
-/* ==========================
-   COIN DRAG
-========================== */
+/* =========================
+   COIN DRAG START
+========================= */
 
 coin.addEventListener(
   "mousedown",
@@ -372,58 +569,83 @@ coin.addEventListener(
 
     dragging = true;
 
-    coin.classList.add("dragging");
+    coin.classList.add(
+      "dragging"
+    );
 
     const rect =
       coin.getBoundingClientRect();
 
     offsetX =
-      e.clientX - rect.left;
+      e.clientX -
+      rect.left;
 
     offsetY =
-      e.clientY - rect.top;
+      e.clientY -
+      rect.top;
 
-    coin.style.bottom = "auto";
+    coin.style.bottom =
+      "auto";
 
+    coin.style.transition =
+      "none";
   }
 );
 
+
+/* =========================
+   COIN MOVE
+========================= */
 
 document.addEventListener(
   "mousemove",
   function(e) {
 
-    if (!dragging) return;
+    if (!dragging) {
+      return;
+    }
 
     coin.style.left =
-      (e.clientX - offsetX) + "px";
+      (
+        e.clientX -
+        offsetX
+      ) + "px";
 
     coin.style.top =
-      (e.clientY - offsetY) + "px";
-
+      (
+        e.clientY -
+        offsetY
+      ) + "px";
   }
 );
 
+
+/* =========================
+   COIN RELEASE
+========================= */
 
 document.addEventListener(
   "mouseup",
   function() {
 
-    if (!dragging) return;
+    if (!dragging) {
+      return;
+    }
 
     dragging = false;
 
-    coin.classList.remove("dragging");
+    coin.classList.remove(
+      "dragging"
+    );
 
     checkCoin();
-
   }
 );
 
 
-/* ==========================
-   CHECK COIN SLOT
-========================== */
+/* =========================
+   CHECK COIN
+========================= */
 
 function checkCoin() {
 
@@ -433,20 +655,25 @@ function checkCoin() {
   const slotRect =
     coinSlot.getBoundingClientRect();
 
-  const coinCenterX =
+
+  const x =
     coinRect.left +
     coinRect.width / 2;
 
-  const coinCenterY =
+  const y =
     coinRect.top +
     coinRect.height / 2;
 
 
   const inside =
-    coinCenterX > slotRect.left &&
-    coinCenterX < slotRect.right &&
-    coinCenterY > slotRect.top &&
-    coinCenterY < slotRect.bottom;
+
+    x > slotRect.left &&
+
+    x < slotRect.right &&
+
+    y > slotRect.top &&
+
+    y < slotRect.bottom;
 
 
   if (inside) {
@@ -454,43 +681,82 @@ function checkCoin() {
     paid = true;
 
     display.textContent =
-      "$1.00 — SELECT";
+      "$1.00 SELECT";
 
     display.classList.add(
       "ready"
     );
 
+
     coin.style.transition =
-      "all .25s ease";
+      "all .30s ease";
+
 
     coin.style.left =
-      slotRect.left +
-      slotRect.width / 2 -
-      5 +
-      "px";
+      (
+        slotRect.left +
+        slotRect.width / 2 -
+        coinRect.width / 2
+      ) + "px";
+
 
     coin.style.top =
-      slotRect.top +
-      slotRect.height / 2 +
-      "px";
+      (
+        slotRect.top +
+        slotRect.height / 2 -
+        coinRect.height / 2
+      ) + "px";
+
 
     coin.style.transform =
-      "scale(.1) rotate(180deg)";
+      "scale(.05) rotate(180deg)";
+
 
     coin.style.opacity =
       "0";
 
   }
 
+  else {
+
+    resetCoin();
+
+  }
 }
 
 
-/* ==========================
+/* =========================
+   RESET COIN
+========================= */
+
+function resetCoin() {
+
+  coin.style.transition =
+    "all .35s ease";
+
+  coin.style.transform =
+    "";
+
+  coin.style.opacity =
+    "1";
+
+  coin.style.left =
+    "35px";
+
+  coin.style.top =
+    "auto";
+
+  coin.style.bottom =
+    "35px";
+}
+
+
+/* =========================
    PRODUCT CLICK
-========================== */
+========================= */
 
 products.forEach(
-  product => {
+  function(product) {
 
     product.addEventListener(
       "click",
@@ -501,15 +767,32 @@ products.forEach(
           display.textContent =
             "INSERT COIN";
 
+
           display.animate(
             [
-              { transform: "translateX(0)" },
-              { transform: "translateX(-5px)" },
-              { transform: "translateX(5px)" },
-              { transform: "translateX(0)" }
+              {
+                transform:
+                  "translateX(0)"
+              },
+
+              {
+                transform:
+                  "translateX(-5px)"
+              },
+
+              {
+                transform:
+                  "translateX(5px)"
+              },
+
+              {
+                transform:
+                  "translateX(0)"
+              }
             ],
+
             {
-              duration: 250
+              duration: 280
             }
           );
 
@@ -520,37 +803,43 @@ products.forEach(
         dispenseProduct(
           product
         );
-
       }
     );
-
   }
 );
 
 
-/* ==========================
-   DROP PRODUCT
-========================== */
+/* =========================
+   DISPENSE PRODUCT
+========================= */
 
-function dispenseProduct(product) {
+function dispenseProduct(
+  product
+) {
 
   const image =
     product.dataset.product;
 
+
   const productRect =
     product.getBoundingClientRect();
 
-  const machineRect =
-    document
-      .getElementById("machine")
-      .getBoundingClientRect();
 
+  const machineRect =
+    machine.getBoundingClientRect();
+
+
+  /* 创建掉落商品 */
 
   const falling =
-    document.createElement("img");
+    document.createElement(
+      "img"
+    );
+
 
   falling.src =
     image;
+
 
   falling.className =
     "falling-product";
@@ -560,14 +849,15 @@ function dispenseProduct(product) {
     (
       productRect.left +
       productRect.width / 2 -
-      50
+      57
     ) + "px";
+
 
   falling.style.top =
     (
       productRect.top +
       productRect.height / 2 -
-      50
+      57
     ) + "px";
 
 
@@ -576,20 +866,19 @@ function dispenseProduct(product) {
   );
 
 
-  /*
-    原来格子里的商品消失
-  */
+  /* 原商品消失 */
 
   product.style.opacity =
-    ".12";
+    "0";
 
   product.style.pointerEvents =
     "none";
 
 
-  /*
-    下一帧开始掉
-  */
+  /* =========================
+     DROP
+  ========================= */
+
 
   requestAnimationFrame(
     function() {
@@ -597,25 +886,35 @@ function dispenseProduct(product) {
       requestAnimationFrame(
         function() {
 
+
+          /*
+            目标：
+            vending machine
+            底部取货口
+          */
+
+
           falling.style.left =
             (
               machineRect.left +
-              machineRect.width * .48 -
-              50
+              machineRect.width *
+              0.38
             ) + "px";
+
 
           falling.style.top =
             (
               machineRect.top +
-              machineRect.height * .83
+              machineRect.height *
+              0.86
             ) + "px";
 
+
           falling.style.transform =
-            "rotate(25deg) scale(.85)";
+            "rotate(30deg) scale(.85)";
 
         }
       );
-
     }
   );
 
@@ -623,45 +922,32 @@ function dispenseProduct(product) {
   display.textContent =
     "THANK YOU";
 
+
   display.classList.remove(
     "ready"
   );
 
+
   paid = false;
 
 
-  /*
-    coin 重新出现
-  */
+  /* =========================
+     RESET
+  ========================= */
+
 
   setTimeout(
     function() {
 
-      coin.style.transition =
-        "none";
-
-      coin.style.transform =
-        "";
-
-      coin.style.opacity =
-        "1";
-
-      coin.style.left =
-        "35px";
-
-      coin.style.top =
-        "auto";
-
-      coin.style.bottom =
-        "35px";
+      resetCoin();
 
       display.textContent =
         "INSERT COIN";
 
     },
-    1500
-  );
 
+    1400
+  );
 }
 
 </script>
